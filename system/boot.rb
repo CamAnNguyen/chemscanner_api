@@ -11,7 +11,7 @@ require_relative 'application'
 Application.finalize!
 
 # Add exsiting Logger instance to DB.loggers collection.
-Application['database'].loggers << Application['logger']
+# Application['database'].loggers << Application['logger']
 
 # Freeze internal data structures for the Database instance.
 Application['database'].freeze unless Application.env == 'development'

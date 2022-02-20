@@ -82,7 +82,8 @@ CREATE TABLE public.tasks (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     started_at timestamp without time zone,
     finished_at timestamp without time zone,
-    document_id uuid NOT NULL
+    document_id uuid NOT NULL,
+    job_id text
 );
 
 
@@ -106,6 +107,14 @@ CREATE TABLE public.users (
 
 ALTER TABLE ONLY public.documents
     ADD CONSTRAINT documents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tasks tasks_job_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tasks
+    ADD CONSTRAINT tasks_job_id_key UNIQUE (job_id);
 
 
 --
@@ -138,6 +147,13 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tasks_job_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX tasks_job_id_index ON public.tasks USING btree (job_id);
 
 
 --

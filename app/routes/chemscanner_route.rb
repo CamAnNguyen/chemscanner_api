@@ -24,9 +24,11 @@ class App
               size: tmp_file.size
             }
           file = Documents::Creator.new(attributes: file_attributes).call
-          jid = ChemscannerWorker.perform_async(file.id)
+          task = Tasks::Creator.new(file).call
+          jid = ChemscannerWorker.perform_async(file.id, task.id)
           next if jid.nil?
 
+          task.update(job_id: jid)
           files.push({ file: filename, job_id: jid })
         end
 

@@ -63,6 +63,12 @@ gem 'sidekiq', '>= 6.4.1'
 # Efficient and thread-safe code loader for Ruby.
 gem 'zeitwerk'
 
+gem 'rdkit_chem', git: 'https://github.com/CamAnNguyen/rdkit_chem'
+gem 'chem_scanner', git: 'git@git.scc.kit.edu:ComPlat/chem_scanner.git'
+gem 'nokogiri'
+gem 'rubyzip'
+gem 'httparty'
+
 group :development, :test do
   # Debugging in Ruby 
   gem 'debug'
