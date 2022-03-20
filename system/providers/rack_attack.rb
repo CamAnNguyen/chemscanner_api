@@ -9,7 +9,8 @@ Application.register_provider(:rack_attack) do
 
   start do
     # Configure Redis cache.
-    Rack::Attack.cache.store = Rack::Attack::StoreProxy::RedisStoreProxy.new(target[:redis])
+    # Rack::Attack.cache.store = Rack::Attack::StoreProxy::RedisStoreProxy.new(target[:redis])
+    Rack::Attack.cache.store = target[:redis]
 
     # Throttle POST requests to /api/v1/login by IP address.
     #

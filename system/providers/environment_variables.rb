@@ -7,11 +7,9 @@ Application.register_provider(:environment_variables) do
     # Get Application current environment.
     env = Application.env
 
-    # Load environment variables if current environment is development or test.
-    if %w[development test].include?(env)
-      require 'dotenv'
+    # Load environment variables
+    require 'dotenv'
 
-      Dotenv.load('.env', ".env.#{env}")
-    end
+    Dotenv.load('.env', ".env.#{env}")
   end
 end

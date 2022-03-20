@@ -69,15 +69,15 @@ gem 'nokogiri'
 gem 'rubyzip'
 gem 'httparty'
 
+# A Ruby gem to load environment variables from `.env`.
+gem 'dotenv'
+
 group :development, :test do
   # Debugging in Ruby 
   gem 'debug'
 
   # A library for setting up Ruby objects as test data.
   gem 'factory_bot'
-
-  # A Ruby gem to load environment variables from `.env`.
-  gem 'dotenv'
 
   # A Ruby static code analyzer and formatter, based on the community Ruby style guide.
   gem 'rubocop'
@@ -102,4 +102,7 @@ group :development, :test do
 
   # Rack::Test is a layer on top of Rack's MockRequest similar to Merb's RequestHelper.
   gem 'rack-test'
+
+  # Solargraph
+  gem 'solargraph'
 end
