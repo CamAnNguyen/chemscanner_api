@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+# Final serializer of ChemScanner output
 class ChemscannerSerializer < ApplicationSerializer
+  # ChemScanner output to json
   def to_json
     {
       molecules: molecules,
@@ -11,7 +13,7 @@ class ChemscannerSerializer < ApplicationSerializer
   private
 
   def molecules
-    @molecules.map do |m| 
+    @molecules.map do |m|
       {
         id: m.id,
         cano_smiles: m.cano_smiles,
@@ -36,8 +38,6 @@ class ChemscannerSerializer < ApplicationSerializer
   #  :time=>"",
   #  :details=>{}}
   def reactions
-    @reactions.map do |r| 
-      r.to_hash
-    end
+    @reactions.map(&:to_hash)
   end
 end

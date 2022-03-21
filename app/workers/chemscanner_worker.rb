@@ -9,19 +9,27 @@ class ChemscannerWorker
   # perform scanning
   def perform(doc_id, task_id)
     task = Task.with_pk!(task_id)
-    task.update(started_at: Time.now)
-
+    start_task(task)
     cs_output = scan_document(doc_id)
     output = ChemscannerSerializer.new(
       molecules: cs_output.molecules,
       reactions: cs_output.reactions
     )
     post_output(output.render, task.job_id)
-
-    task.update(finished_at: Time.now, output: output)
+    finish_task(task, output.to_json)
   end
 
   private
+
+  def start_task(task)
+    task.update(started_at: Time.now)
+  end
+
+  def finish_task(task, output)
+    task.update(started_at: Time.now)
+    task.update(finished_at: Time.now, output: output)
+    logger.info("Finished task #{task.id}: #{output}")
+  end
 
   def scan_document(doc_id)
     doc = Document.with_pk!(doc_id)
@@ -42,5 +50,7 @@ class ChemscannerWorker
       headers: { 'Content-Type' => '*' },
       body: { data: output }
     )
+  rescue StandardError => e
+    logger.error("Error posting output to: #{ENV['POSTBACK_URL']} - #{e.message}")
   end
 end

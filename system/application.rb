@@ -7,7 +7,7 @@ require 'dry/system/container'
 class Application < Dry::System::Container
   # Provide environment inferrerr.
   use :env, inferrer: -> { ENV.fetch('RACK_ENV', 'development') }
-  use :zeitwerk, debug: true
+  use :zeitwerk
 
   configure do |config|
     # config.component_dirs.add('.')
