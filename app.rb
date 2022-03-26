@@ -25,6 +25,8 @@ class App < Roda
 
   # Adds ability to automatically handle errors raised by the application.
   plugin :error_handler do |e|
+    Application[:logger].error(e)
+
     if e.instance_of?(Exceptions::InvalidParamsError)
       error_object    = e.object
       response.status = 422
