@@ -9,7 +9,12 @@ Application.register_provider(:logger) do
 
   start do
     # Define Logger instance.
-    logger = Logger.new($stdout)
+    logger =
+      if Application.env == 'production'
+        Logger.new('log/production.log')
+      else
+        Logger.new($stdout)
+      end
 
     # Because the Logger's level is set to WARN , only the warning, error, and fatal messages are recorded.
     logger.level = Logger::WARN if Application.env == 'test'

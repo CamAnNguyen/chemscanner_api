@@ -5,7 +5,7 @@ require 'chem_scanner'
 # ChemScanner wrapper lib
 module Chemscanner
   # Post and pre-process for each ChemScanner file
-  class Process
+  module Process
     # Process cdx
     def self.cdx_process(doc)
       cdx = ChemScanner::Cdx.new
@@ -13,6 +13,7 @@ module Chemscanner
       cdx
     end
 
+    # Process cdxml
     def self.cdxml_process(doc)
       cdxml = ChemScanner::Cdxml.new
       cdxml.read(doc.path)

@@ -10,19 +10,23 @@ class ChemscannerWorker
   def perform(doc_id, task_id)
     task = Task.with_pk!(task_id)
     start_task(task)
+
     cs_output = scan_document(doc_id)
     output = ChemscannerSerializer.new(
       molecules: cs_output.molecules,
       reactions: cs_output.reactions
     )
-    post_output(output.render, task.job_id)
+
+    logger.info("Posting job #{task.job_id} result to #{task.postback_url}")
+    post_output(output.render, task.job_id, task.postback_url)
     finish_task(task, output.to_json)
   end
 
   private
 
   def start_task(task)
-    task.update(started_at: Time.now)
+    logger.info("Starting task #{task.id} - job #{jid}")
+    task.update(started_at: Time.now, job_id: jid)
   end
 
   def finish_task(task, output)
@@ -42,15 +46,18 @@ class ChemscannerWorker
     Chemscanner::Process.public_send(func_name, doc)
   end
 
-  def post_output(output, job_id)
-    return if ENV['POSTBACK_URL'].nil?
+  def post_output(output, job_id, postback_url)
+    return if postback_url.nil?
 
-    HTTParty.post(
-      "#{ENV['POSTBACK_URL']}/jobs/#{job_id}/notify-done",
-      headers: { 'Content-Type' => '*' },
-      body: { data: output }
-    )
+    body = { job_id: job_id, data: output }
+    response = HTTParty.post(postback_url, headers: { 'Content-Type' => '*' }, body: body)
+
+    if response.success?
+      logger.info("Posting output to #{postback_url} succeeded: #{response}")
+    else
+      logger.error("Error posting output #{job_id} to #{postback_url}: #{response}")
+    end
   rescue StandardError => e
-    logger.error("Error posting output to: #{ENV['POSTBACK_URL']} - #{e.message}")
+    logger.error("Error posting output to: #{postback_url} - #{e.message}")
   end
 end

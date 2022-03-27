@@ -12,9 +12,12 @@ class App < Roda
   # Adds support for heartbeats.
   plugin :heartbeat
 
-  configure :development, :production do
-    # A powerful logger for Roda with a few tricks up it's sleeve.
-    plugin :enhanced_logger
+  configure :development do
+    plugin :enhanced_logger, trace_all: true
+  end
+
+  configure :production do
+    plugin :enhanced_logger, output: File.open('log/production.log', 'a')
   end
 
   # The symbol_matchers plugin allows you do define custom regexps to use for specific symbols.
@@ -25,8 +28,6 @@ class App < Roda
 
   # Adds ability to automatically handle errors raised by the application.
   plugin :error_handler do |e|
-    Application[:logger].error(e)
-
     if e.instance_of?(Exceptions::InvalidParamsError)
       error_object    = e.object
       response.status = 422
@@ -43,6 +44,10 @@ class App < Roda
       error_object    = { error: 'not_found' }
       response.status = 404
     else
+      Application[:logger].error("#{e.class}: #{e.message}\n")
+      Application[:logger].error(e.backtrace)
+      Application[:logger].error(request.inspect)
+
       error_object    = { error: 'something_went_wrong' }
       response.status = 500
     end
@@ -80,17 +85,13 @@ class App < Roda
   end
 
   plugin :hash_routes
-
-  Dir['app/routes/*.rb'].each do |route_file|
-    load route_file
-  end
+  Dir['app/routes/*.rb'].each { |route_file| load route_file }
 
   hash_routes.on('api') do |r|
     r.on('v1') do
       r.hash_routes
     end
   end
-
   route(&:hash_routes)
 
   FileUtils.mkdir_p(ENV['STORAGE'])

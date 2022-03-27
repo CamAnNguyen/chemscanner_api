@@ -83,7 +83,8 @@ CREATE TABLE public.tasks (
     started_at timestamp without time zone,
     finished_at timestamp without time zone,
     document_id uuid NOT NULL,
-    job_id text
+    job_id text,
+    postback_url text
 );
 
 
