@@ -49,8 +49,11 @@ class ChemscannerWorker
   def post_output(output, job_id, postback_url)
     return if postback_url.nil?
 
-    body = { job_id: job_id, data: output }
-    response = HTTParty.post(postback_url, headers: { 'Content-Type' => '*' }, body: body)
+    response = HTTParty.post(
+      postback_url,
+      headers: { 'Content-Type' => 'application/json' },
+      body: { job_id: job_id, data: output }
+    )
 
     if response.success?
       logger.info("Posting output to #{postback_url} succeeded: #{response}")
