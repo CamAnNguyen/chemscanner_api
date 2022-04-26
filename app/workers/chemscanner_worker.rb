@@ -13,8 +13,8 @@ class ChemscannerWorker
 
     cs_output = scan_document(doc_id)
     output = ChemscannerSerializer.new(
-      molecules: cs_output.molecules,
-      reactions: cs_output.reactions
+      molecules: cs_output&.molecules || [],
+      reactions: cs_output&.reactions || []
     )
 
     logger.info("Posting job #{task.job_id} result to #{task.postback_url}")
