@@ -48,6 +48,9 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'app.rb'
 
+Metrics/MethodLength:
+  Max: 20
+
 Lint/ToJSON:
   Exclude:
     - app/serializers/**/*

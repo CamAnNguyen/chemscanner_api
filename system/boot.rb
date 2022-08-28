@@ -4,6 +4,9 @@
 
 require 'pry'
 require 'securerandom'
+require 'dry-validation'
+require 'chem_scanner'
+require 'rdkit_chem'
 
 require_relative 'application'
 
