@@ -10,10 +10,14 @@ class Application < Dry::System::Container
   use :zeitwerk
 
   configure do |config|
-    # config.component_dirs.add('.')
-    config.autoloader.collapse('.')
+    if env == 'production'
+      config.autoloader.collapse('.')
+      folders = (Dir.glob('app/*') + ['./lib']).reject { |f| f == 'app/routes' }
+    else
+      config.component_dirs.add('.')
+      folders = Dir.glob('app/*') + ['./lib']
+    end
 
-    folders = (Dir.glob('app/*') + ['./lib']).reject { |f| f == 'app/routes' }
     folders.each { |folder| config.component_dirs.add(folder) }
 
     config.autoloader.enable_reloading if env == 'development'

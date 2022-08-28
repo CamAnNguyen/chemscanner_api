@@ -13,7 +13,7 @@ class App < Roda
   plugin :heartbeat
 
   configure :development do
-    plugin :enhanced_logger, trace_all: true
+    plugin :enhanced_logger
   end
 
   configure :production do
@@ -45,10 +45,9 @@ class App < Roda
       response.status = 404
     else
       Application[:logger].error("#{e.class}: #{e.message}\n")
-      Application[:logger].error(e.backtrace)
-      Application[:logger].error(request.inspect)
+      Application[:logger].error(e.backtrace.join("\n"))
 
-      error_object    = { error: 'something_went_wrong' }
+      error_object = { error: 'Internal Server Error' }
       response.status = 500
     end
 

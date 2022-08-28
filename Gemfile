@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '3.0.0'
+ruby '3.1.2'
 
 # Routing Tree Web Toolkit.
 gem 'roda'
@@ -64,7 +64,7 @@ gem 'sidekiq', '>= 6.4.1'
 gem 'zeitwerk'
 
 gem 'rdkit_chem', git: 'https://github.com/CamAnNguyen/rdkit_chem'
-gem 'chem_scanner', git: 'git@git.scc.kit.edu:ComPlat/chem_scanner.git'
+gem 'chem_scanner', git: 'https://github.com/CamAnNguyen/chem_scanner'
 gem 'nokogiri'
 gem 'rubyzip'
 gem 'httparty'

@@ -6,7 +6,7 @@
 # In Puma terminology, these are referred to as worker processes
 # (not to be confused with Heroku worker processes which run in their dynos).
 # Worker processes are isolated from one another at the OS level, therefore not needing to be thread-safe
-workers Integer(ENV['WEB_CONCURRENCY'] || 1)
+workers Integer(ENV['WEB_CONCURRENCY'] || 0)
 
 # Puma can serve each request in a thread from an internal thread pool.
 # This behavior allows Puma to provide additional concurrency for your web application.
