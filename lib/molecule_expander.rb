@@ -3,14 +3,17 @@
 # {MoleculeExpander} replace rgroup with superatom
 class MoleculeExpander
   # Constructor
-  def initialize(rw_mol:, rgroup:, smiles:)
+  def initialize(rw_mol:, rgroup:, superatom:)
     @rw_mol = rw_mol
     @rgroup = rgroup
-    @smiles = smiles
+    @superatom = superatom
   end
 
   # Generates molecules from rgroups
   def call
+    @smiles = ChemScanner.get_superatom(@superatom)
+    return if @smiles.empty?
+
     deleting_atom = []
 
     (0..(@rw_mol.get_num_atoms - 1)).each do |idx|
@@ -18,7 +21,9 @@ class MoleculeExpander
       next unless atom.get_symbol == @rgroup
 
       deleting_atom.push(atom)
-      expand(atom)
+
+      atom_idx = atom.get_idx
+      @superatom == 'H' ? expand_hydrogen(atom_idx) : expand(atom_idx)
     end
 
     deleting_atom.each do |atom|
@@ -27,10 +32,8 @@ class MoleculeExpander
   end
 
   # Expand/replace rgroup atom by smiles
-  def expand(atom)
+  def expand(atom_idx)
     ref = RDKitChem::RWMol.new(@rw_mol)
-
-    atom_idx = atom.get_idx
     first_expand_idx = @rw_mol.get_num_atoms
 
     expand_mol = RDKitChem::RWMol.mol_from_smiles(@smiles)
@@ -49,6 +52,16 @@ class MoleculeExpander
     rescue RuntimeError
       nil
     end
+  end
+
+  # Expand hydrogen handling
+  def expand_hydrogen(atom_idx)
+    bonds = get_atom_bonds(atom_idx)
+    return unless bonds.count == 1
+
+    bond = bonds.first
+    other_idx = bond.get_other_atom_idx(atom_idx)
+    @rw_mol.remove_bond(other_idx, atom_idx)
   end
 
   # Get list bonds that connect to specified atom

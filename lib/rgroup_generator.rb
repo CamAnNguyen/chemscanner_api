@@ -19,10 +19,11 @@ class RgroupGenerator
       next if rw_mol.nil?
 
       data.each do |rgroup, superatom|
-        smiles = ChemScanner.get_superatom(superatom)
-        next if smiles.empty?
-
-        MoleculeExpander.new(rw_mol: rw_mol, rgroup: rgroup, smiles: smiles).call
+        MoleculeExpander.new(
+          rw_mol: rw_mol,
+          rgroup: rgroup,
+          superatom: superatom
+        ).call
       end
 
       mdl = rw_mol.mol_to_mol_block(true, -1, false)
