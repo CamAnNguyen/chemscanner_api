@@ -65,6 +65,7 @@ gem 'zeitwerk'
 
 gem 'rdkit_chem', git: 'https://github.com/CamAnNguyen/rdkit_chem'
 gem 'chem_scanner', git: 'https://github.com/CamAnNguyen/chem_scanner'
+gem 'inchi-gem', git: 'https://github.com/CamAnNguyen/inchi-gem'
 gem 'nokogiri'
 gem 'rubyzip'
 gem 'httparty'

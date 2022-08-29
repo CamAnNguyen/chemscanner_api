@@ -19,15 +19,18 @@ class RgroupGenerator
       next if rw_mol.nil?
 
       data.each do |rgroup, superatom|
-        MoleculeExpander.new(
-          rw_mol: rw_mol,
-          rgroup: rgroup,
-          superatom: superatom
-        ).call
+        MoleculeExpander.new(rw_mol: rw_mol, rgroup: rgroup, superatom: superatom).call
       end
 
       mdl = rw_mol.mol_to_mol_block(true, -1, false)
-      molecules.push(data.merge(mdl: mdl))
+      inchi = Inchi.molfileToInchi(mdl, Inchi::ExtraInchiReturnValues.new, '-Polymers')
+      molecule = data.merge(
+        mdl: mdl,
+        smiles: rw_mol.mol_to_smiles(true),
+        inchi: inchi,
+        inchikey: Inchi.InchiToInchiKey(inchi)
+      )
+      molecules.push(molecule)
     end
 
     molecules

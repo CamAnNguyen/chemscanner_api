@@ -10,6 +10,12 @@ GIT
       ruby-ole (>= 1.2)
 
 GIT
+  remote: https://github.com/CamAnNguyen/inchi-gem
+  revision: 9a95669b42e18a20d2a0c2d5440670ff94e46c37
+  specs:
+    inchi-gem (1.06.1)
+
+GIT
   remote: https://github.com/CamAnNguyen/rdkit_chem
   revision: 4b6c1835d605ec281c5d1d8cf89973a923a86757
   specs:
@@ -246,6 +252,7 @@ DEPENDENCIES
   dry-validation
   factory_bot
   httparty
+  inchi-gem!
   nokogiri
   oj
   pry
