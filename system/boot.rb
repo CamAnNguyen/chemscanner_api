@@ -7,6 +7,7 @@ require 'securerandom'
 require 'dry-validation'
 require 'chem_scanner'
 require 'rdkit_chem'
+require 'inchi-gem'
 
 require_relative 'application'
 
