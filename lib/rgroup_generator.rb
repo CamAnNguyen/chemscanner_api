@@ -27,11 +27,12 @@ class RgroupGenerator
       end
 
       mdl = rw_mol.mol_to_mol_block(true, -1, false, true)
-      inchi = try_get_inchi(mdl)
+      simplified_mol = simplify_mol(mdl)
+      inchi = try_get_inchi(mdl, simplified_mol)
 
       molecule = data.merge(
         mdl: mdl,
-        smiles: rw_mol.mol_to_smiles(true),
+        smiles: try_get_smiles(rw_mol, simplified_mol),
         inchi: inchi,
         inchikey: Inchi.InchiToInchiKey(inchi)
       )
@@ -48,11 +49,8 @@ class RgroupGenerator
     RDKitChem::RWMol.mol_from_mol_block(mdl, false)
   end
 
-  # Try to get inchi from mdl
-  def try_get_inchi(mdl)
-    inchi = Inchi.molfileToInchi(mdl, Inchi::ExtraInchiReturnValues.new, '-Polymers')
-    return inchi unless inchi.empty?
-
+  # Simplify molecule, convert bond type 10 to hydrogen, 8 to other type
+  def simplify_mol(mdl)
     mol = rdkit_mol_from_mdl(mdl)
     bonds_to_remove = get_zero_order_bonds(mol)
 
@@ -60,8 +58,22 @@ class RgroupGenerator
       mol.remove_bond(bond[0], bond[1])
     end
 
+    mol
+  end
+
+  # Try to get inchi from mdl
+  def try_get_inchi(mdl, mol)
+    inchi = Inchi.molfileToInchi(mdl, Inchi::ExtraInchiReturnValues.new, '-Polymers')
+    return inchi unless inchi.empty?
+
     new_mdl = mol.mol_to_mol_block(true, -1, true, true)
     Inchi.molfileToInchi(new_mdl, Inchi::ExtraInchiReturnValues.new, '-Polymers')
+  end
+
+  def try_get_smiles(mol, simplified_mol)
+    mol.mol_to_smiles(true)
+  rescue RuntimeError
+    simplified_mol.mol_to_smiles(true)
   end
 
   # Get zero-order bonds
