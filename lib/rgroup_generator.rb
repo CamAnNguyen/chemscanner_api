@@ -26,26 +26,56 @@ class RgroupGenerator
         MoleculeExpander.new(rw_mol: rw_mol, rgroup: rgroup, superatom: superatom).call
       end
 
-      mdl = rw_mol.mol_to_mol_block(true, -1, false, true)
-      simplified_mol = simplify_mol(mdl)
-      inchi = try_get_inchi(mdl, simplified_mol)
+      begin
+        RDKitChem.kekulize(rw_mol)
+        RDKitChem.sanitize_mol(rw_mol)
+      rescue StandardError
+      end
 
-      molecule = data.merge(
-        mdl: mdl,
-        smiles: try_get_smiles(rw_mol, simplified_mol),
-        inchi: inchi,
-        inchikey: Inchi.InchiToInchiKey(inchi)
-      )
+      mol_data = get_mol_data(rw_mol)
+      molecule = data.merge(mol_data)
       molecules.push(molecule)
     end
 
     molecules
   end
 
+  # get other molecule format
+  def get_mol_data(rw_mol)
+    mdl = rw_mol.mol_to_mol_block(true, -1, false, true)
+    simplified_mol = simplify_mol(mdl)
+    inchi = try_get_inchi(mdl, simplified_mol)
+    ro_mol = RDKitChem::RWMol.to_romol(rw_mol)
+    # simplified_ro_mol = RDKitChem::RWMol.to_romol(simplified_mol)
+
+    {
+      mdl: mdl,
+      smiles: try_get_smiles(rw_mol, simplified_mol),
+      inchi: inchi,
+      inchikey: Inchi.InchiToInchiKey(inchi),
+      molecular_weight: try_get_molecular_weight(ro_mol),
+      formula: try_get_molecule_formula(ro_mol)
+    }.compact
+  end
+
+  # get molecular weight, return nil if any exception occurs
+  def try_get_molecular_weight(ro_mol)
+    RDKitChem.calc_exact_mw(ro_mol)
+  rescue StandardError
+    nil
+  end
+
+  # get molecule formula, return nil if any exception occurs
+  def try_get_molecule_formula(ro_mol)
+    RDKitChem.calc_mol_formula(ro_mol)
+  rescue StandardError
+    nil
+  end
+
   # Return RDKitChem::RWMol from mdl
   def rdkit_mol_from_mdl(mdl)
     RDKitChem::RWMol.mol_from_mol_block(mdl)
-  rescue RuntimeError
+  rescue StandardError
     RDKitChem::RWMol.mol_from_mol_block(mdl, false)
   end
 
@@ -70,6 +100,7 @@ class RgroupGenerator
     Inchi.molfileToInchi(new_mdl, Inchi::ExtraInchiReturnValues.new, '-Polymers')
   end
 
+  # get molecule SMILES, return nil if any exception occurs
   def try_get_smiles(mol, simplified_mol)
     mol.mol_to_smiles(true)
   rescue RuntimeError

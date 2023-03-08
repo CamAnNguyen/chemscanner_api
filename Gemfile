@@ -58,7 +58,7 @@ gem 'rack-attack'
 gem 'redis'
 
 # Simple, efficient background processing for Ruby.
-gem 'sidekiq', '>= 6.4.1'
+gem 'sidekiq', '< 7'
 
 # Efficient and thread-safe code loader for Ruby.
 gem 'zeitwerk'
